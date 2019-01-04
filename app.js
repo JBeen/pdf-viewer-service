@@ -7,8 +7,8 @@ var app = express();
 app.use(cors());
 app.set('view engine', 'ejs');
 
-let fileName = "pdf-1544359129947.pdf";
-const path = 'public/uploads/';
+let fileName = null;
+const path = 'public/';
 
 app.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -19,7 +19,8 @@ var storage = multer.diskStorage({
     cb(null, path)
   },
   filename: function (req, file, cb) {
-    cb(null, `${file.fieldname}-${Date.now()}.pdf`);
+    const fileName = `${file.fieldname}-${Date.now()}.pdf`;
+    cb(null, fileName);
   }
 })
 
@@ -30,7 +31,9 @@ app.post('/api/upload', upload.single('pdf'), function(req, res) {
 });
 
 app.get('/pdf', function (req, res, next) {
-  res.download(path + fileName);
+  if (fileName) {
+    res.download(path + fileName);
+  }
 });
 
 module.exports = app;
